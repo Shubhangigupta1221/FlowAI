@@ -12,7 +12,7 @@ Built with React, Vite, and Tailwind CSS.
 
 ## Live Demo
 
-> **Deployed URL:** _[Add your deployed link here]_
+> **Deployed URL:** [https://shubhi-acdoyn-flow-netlify.netlify.app](https://shubhi-acdoyn-flow-netlify.netlify.app/)
 
 ---
 
