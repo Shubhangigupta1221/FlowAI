@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 const KONAMI = [
   'ArrowUp', 'ArrowUp',
@@ -10,68 +10,58 @@ const KONAMI = [
 
 export default function EasterEgg() {
   const [triggered, setTriggered] = useState(false)
-  const [visible, setVisible] = useState(false)
+  const bufferRef = useRef([])
+  const timeoutRef = useRef(null)
 
-  const handleKey = useCallback(() => {
-    let buffer = []
-    let timer = null
+  const handleKey = useCallback((e) => {
+    if (triggered) return
 
-    const listener = (e) => {
-      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key
-      buffer.push(key)
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key
+    const buf = bufferRef.current
 
-      // Only keep the last N keys (length of sequence)
-      if (buffer.length > KONAMI.length) {
-        buffer = buffer.slice(-KONAMI.length)
-      }
+    buf.push(key)
 
-      // Reset buffer after 3s of inactivity
-      clearTimeout(timer)
-      timer = setTimeout(() => { buffer = [] }, 3000)
-
-      // Check match
-      if (buffer.length === KONAMI.length && buffer.every((k, i) => k === KONAMI[i])) {
-        buffer = []
-        setTriggered(true)
-        setVisible(true)
-      }
+    // Keep buffer trimmed to Konami length
+    if (buf.length > KONAMI.length) {
+      buf.shift()
     }
 
-    window.addEventListener('keydown', listener)
-    return () => {
-      window.removeEventListener('keydown', listener)
-      clearTimeout(timer)
+    // Check match
+    if (
+      buf.length === KONAMI.length &&
+      buf.every((k, i) => k === KONAMI[i])
+    ) {
+      setTriggered(true)
+      bufferRef.current = []
+
+      // Auto-dismiss after 2.5s
+      timeoutRef.current = setTimeout(() => {
+        setTriggered(false)
+      }, 2500)
     }
-  }, [])
-
-  useEffect(() => {
-    const cleanup = handleKey()
-    return cleanup
-  }, [handleKey])
-
-  // Auto-hide after 2.5s
-  useEffect(() => {
-    if (!triggered) return
-    const t1 = setTimeout(() => setVisible(false), 2200)
-    const t2 = setTimeout(() => setTriggered(false), 2600)
-    return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [triggered])
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKey)
+    return () => {
+      window.removeEventListener('keydown', handleKey)
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [handleKey])
 
   if (!triggered) return null
 
   return (
     <>
-      {/* Subtle border shimmer on the whole page */}
+      {/* Subtle page border glow */}
       <div
         style={{
           position: 'fixed',
           inset: 0,
           pointerEvents: 'none',
           zIndex: 9998,
-          border: '2px solid transparent',
-          borderImage: 'linear-gradient(135deg, #10b981, #3b82f6, #8b5cf6, #10b981) 1',
-          opacity: visible ? 0.6 : 0,
-          transition: 'opacity 0.4s ease',
+          boxShadow: 'inset 0 0 80px rgba(16, 185, 129, 0.12)',
+          animation: 'easterGlow 2.5s ease-out forwards',
         }}
       />
 
@@ -79,27 +69,46 @@ export default function EasterEgg() {
       <div
         style={{
           position: 'fixed',
-          bottom: '32px',
+          bottom: '28px',
           left: '50%',
-          transform: `translateX(-50%) translateY(${visible ? '0' : '16px'})`,
+          transform: 'translateX(-50%)',
           zIndex: 9999,
-          background: '#1a1d21',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '10px 20px',
+          backgroundColor: '#141618',
           border: '1px solid #252830',
           borderRadius: '8px',
-          padding: '10px 20px',
           fontSize: '13px',
           color: '#e4e6eb',
           fontFamily: 'Inter, system-ui, sans-serif',
           fontWeight: 500,
-          letterSpacing: '-0.01em',
-          opacity: visible ? 1 : 0,
-          transition: 'opacity 0.35s ease, transform 0.35s ease',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
-          whiteSpace: 'nowrap',
+          letterSpacing: '0.01em',
+          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.4)',
+          animation: 'easterSlideUp 0.35s ease-out, easterFadeOut 0.4s ease-in 2.1s forwards',
         }}
       >
-        You found the FlowAI secret ✨
+        <span style={{ fontSize: '15px' }}>✨</span>
+        <span>You found the FlowAI secret</span>
       </div>
+
+      <style>{`
+        @keyframes easterSlideUp {
+          from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+          to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        @keyframes easterFadeOut {
+          from { opacity: 1; }
+          to   { opacity: 0; }
+        }
+        @keyframes easterGlow {
+          0%   { opacity: 0; }
+          15%  { opacity: 1; }
+          70%  { opacity: 1; }
+          100% { opacity: 0; }
+        }
+      `}</style>
     </>
   )
 }
