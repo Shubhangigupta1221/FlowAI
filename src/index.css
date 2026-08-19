@@ -1,9 +1,53 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
 
 html, body {
   overflow-x: hidden;
-  background-color: #020617;
-  color: #f8fafc;
+  background-color: #0d0f12;
+  color: #e4e6eb;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* Scroll reveal utility */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
 
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Thin scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0d0f12;
+}
+::-webkit-scrollbar-thumb {
+  background: #252830;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #343840;
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}

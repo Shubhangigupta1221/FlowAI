@@ -8,7 +8,7 @@ import Footer from './components/Footer'
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-blue-500/30 selection:text-blue-200">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#0d0f12', color: '#e4e6eb' }}>
       <Navbar />
       <main className="flex-1 w-full">
         <Hero />
@@ -21,12 +21,3 @@ export default function App() {
     </div>
   )
 }
-
-
-
-
-
-
-
-
-
