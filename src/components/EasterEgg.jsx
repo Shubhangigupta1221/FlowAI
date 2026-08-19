@@ -1,12 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 
-const KONAMI = [
-  'ArrowUp', 'ArrowUp',
-  'ArrowDown', 'ArrowDown',
-  'ArrowLeft', 'ArrowRight',
-  'ArrowLeft', 'ArrowRight',
-  'b', 'a',
-]
+const SECRET = ['w', 'o', 'r', 'k', 'a', 'i']
 
 export default function EasterEgg() {
   const [triggered, setTriggered] = useState(false)
@@ -21,15 +15,15 @@ export default function EasterEgg() {
 
     buf.push(key)
 
-    // Keep buffer trimmed to Konami length
-    if (buf.length > KONAMI.length) {
+    // Keep buffer trimmed to sequence length
+    if (buf.length > SECRET.length) {
       buf.shift()
     }
 
     // Check match
     if (
-      buf.length === KONAMI.length &&
-      buf.every((k, i) => k === KONAMI[i])
+      buf.length === SECRET.length &&
+      buf.every((k, i) => k === SECRET[i])
     ) {
       setTriggered(true)
       bufferRef.current = []
